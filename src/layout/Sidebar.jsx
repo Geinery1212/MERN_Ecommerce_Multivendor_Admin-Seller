@@ -1,7 +1,16 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import logo from '../images/logo.png'
+import { getNav } from '../navigation';
+import { IoLogOut } from "react-icons/io5";
 export const Sidebar = () => {
+    const [allNav, setAllNav] = useState([]);
+    const { pathname } = useLocation();
+    useEffect(() => {
+        const navs = getNav('admin');
+        console.log(navs)
+        setAllNav(navs);
+    }, []);
     return (
         <div>
             <div>
@@ -10,7 +19,29 @@ export const Sidebar = () => {
             <div className='w-[260px] fixed bg-[#e6e7fb] z-50 top-0 h-screen shadow-[0_0_15px_0_rgb(34_41_47_/_5%)] transition-all'>
                 <div className='h-[70px] flex justify-center items-center'>
                     <Link to='/' className='w-[180px] h-[50px]'>
-                    <img src={logo} alt="Logo" className='w-full h-full' /></Link>
+                        <img src={logo} alt="Logo" className='w-full h-full' /></Link>
+                </div>
+                <div className='px-[16px]'>
+                    <ul>
+                        {allNav.map((element, index) => (
+                            <li key={index}>
+                                <Link
+                                    to={element.path}
+                                    className={`${pathname === element.path
+                                        ? 'bg-blue-600 shadow-indigo-500/50 text-white duration-500'
+                                        : 'text-[#030811] font-bold duration-200'
+                                        } px-[12px] py-[9px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1`}
+                                >
+                                    <span>{element.icon}</span>
+                                    <span>{element.title}</span>
+                                </Link>
+                            </li>
+                        ))}
+                        <li className='text-[#030811] font-bold duration-200 px-[12px] py-[9px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
+                            <span><IoLogOut /></span>
+                            <span>Logout</span>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
