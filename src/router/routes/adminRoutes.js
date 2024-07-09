@@ -4,12 +4,20 @@ import { lazy } from "react";
  * Make sure components are exported as default components
  * Sixtax: export default ComponentName
  */
+
 const AdminDashboard = lazy(() => import("../../views/admin/AdminDashboard"));
+const Orders = lazy(() => import("../../views/admin/Orders"));
 
 export const adminRoutes = [
     {
         path: '/admin/dashboard',
         element: <AdminDashboard />,
+        //roles the will be able to access the home
+        role: 'admin'
+    },
+    {
+        path: '/admin/dashboard/orders',
+        element: <Orders />,
         //roles the will be able to access the home
         role: 'admin'
     }
