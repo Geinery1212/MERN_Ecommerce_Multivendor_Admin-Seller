@@ -1,13 +1,11 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
-import { BsArrowBarDown, BsImage } from "react-icons/bs";
-import { BsArrowBarUp } from "react-icons/bs";
+import { BsImage } from "react-icons/bs";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { IoMdCloseCircle } from "react-icons/io";
 import Pagination from '../Pagination';
 const Category = () => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [searchValue, setSearchValue] = useState('');
     const [perPage, setPerPage] = useState(5);
     const [show, setShow] = useState(false);
     return (

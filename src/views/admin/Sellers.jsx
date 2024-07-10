@@ -1,13 +1,10 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
-import { BsImage } from "react-icons/bs";
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
-import { IoMdCloseCircle } from "react-icons/io";
+import { FaEye } from "react-icons/fa";
 import Pagination from '../Pagination';
 const Sellers = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(5);
-    const [show, setShow] = useState(false);
     return (
         <div className='px-2 lg:px-7 pt-5'>
             <div className='w-full p-4 bg-[#6a5fdf] rounded-md'>
