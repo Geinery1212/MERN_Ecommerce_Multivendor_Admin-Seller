@@ -1,7 +1,7 @@
 import React from 'react'
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import { MdKeyboardArrowRight } from "react-icons/md";
-
+                                                               //50        3                     
 const Pagination = ({ currentPage, setCurrentPage, totalItems, perPage, showItem }) => {
     let totalPages = Math.ceil(totalItems / perPage);
     let startPage = currentPage;
