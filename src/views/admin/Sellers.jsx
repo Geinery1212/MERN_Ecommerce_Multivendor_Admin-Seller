@@ -27,7 +27,7 @@ const Sellers = () => {
                                 <th scope='col' className='py-1 px-4'>Shop Name</th>
                                 <th scope='col' className='py-1 px-4'>Payment Status</th>
                                 <th scope='col' className='py-1 px-4'>Email</th>
-                                <th scope='col' className='py-1 px-4'>Division</th>
+                                <th scope='col' className='py-1 px-4'>State</th>
                                 <th scope='col' className='py-1 px-4'>District</th>
                                 <th scope='col' className='py-1 px-4'>Action</th>
                             </tr>
