@@ -45,7 +45,7 @@ const Orders = () => {
                             <div className='py-3 w-[13%] font-medium '>$563</div>
                             <div className='py-3 w-[18%] font-medium '>Pending</div>
                             <div className='py-3 w-[18%] font-medium '>Pending</div>
-                            <div className='py-3 w-[18%] font-medium '><Link>View</Link></div>
+                            <div className='py-3 w-[18%] font-medium '><Link to={"/admin/dashboard/orders/details/3"}>View</Link></div>
                             <div className='py-3 w-[8%] font-medium ' onClick={(e) => setShow(!show)}>{show ? <BsArrowBarUp /> : <BsArrowBarDown />}
                             </div>
                         </div>
