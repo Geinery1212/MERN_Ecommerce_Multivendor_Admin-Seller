@@ -1,5 +1,4 @@
 import { lazy } from "react";
-import Orders from "../../views/seller/Orders";
 // Import this way to load them only when necessary
 /**
  * Make sure components are exported as default components
@@ -9,8 +8,11 @@ const Home = lazy(() => import("../../views/auth/pages/Home"));
 const SellerDashboard = lazy(() => import("../../views/seller/SellerDashboard"));
 const AddProduct = lazy(() => import("../../views/seller/AddProduct"));
 const Products = lazy(() => import("../../views/seller/Products"));
-const DiscountProducts = lazy(() => import("../../views/seller/DiscountProducts"));
 const Payments = lazy(() => import("../../views/seller/Payments"));
+const DiscountProducts = lazy(() => import("../../views/seller/DiscountProducts"));
+const Orders = lazy(() => import("../../views/seller/Orders"));
+const SellerToCustomerChat = lazy(() => import("../../views/seller/SellerToCustomerChat"));
+const SellerToAdminChat = lazy(() => import("../../views/seller/SellerToAdminChat"));
 
 export const sellerRoutes = [
     {
@@ -22,37 +24,55 @@ export const sellerRoutes = [
     {
         path: '/seller/dashboard',
         element: <SellerDashboard />,
-        //roles the will be able to access the home
-        ability: ['seller']
+        role: 'seller',
+        status: 'active'
     },
     {
         path: '/seller/dashboard/add-product',
         element: <AddProduct />,
-        //roles the will be able to access the home
-        ability: ['seller']
+        role: 'seller',
+        status: 'active'
     },
     {
         path: '/seller/dashboard/all-products',
         element: <Products />,
-        //roles the will be able to access the home
-        ability: ['seller']
+        role: 'seller',
+        status: 'active'
     },
     {
         path: '/seller/dashboard/discount-products',
         element: <DiscountProducts />,
-        //roles the will be able to access the home
-        ability: ['seller']
+        role: 'seller',
+        status: 'active'
     },
     {
         path: '/seller/dashboard/orders',
         element: <Orders />,
-        //roles the will be able to access the home
-        ability: ['seller']
+        role: 'seller',
+        ability: ['active', 'deactive']
     },
     {
         path: '/seller/dashboard/payments',
         element: <Payments />,
-        //roles the will be able to access the home
-        ability: ['seller']
+        role: 'seller',
+        status: 'active'
+    },
+    {
+        path: '/seller/dashboard/chat-customer/:customerId',
+        element: <SellerToCustomerChat />,
+        role: 'seller',
+        status: 'active'
+    },
+    {
+        path: '/seller/dashboard/chat-customer',
+        element: <SellerToCustomerChat />,
+        role: 'seller',
+        status: 'active'
+    },
+    {
+        path: '/seller/dashboard/chat-support',
+        element: <SellerToAdminChat />,
+        role: 'seller',
+        ability: ['active', 'deactive']
     }
 ]
