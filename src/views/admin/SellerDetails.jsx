@@ -52,11 +52,11 @@ const SellerDetails = () => {
                                 </div>
                                 <div className='flex gap-2 font-bold text-black'>
                                     <span>State: </span>
-                                    <span>San Diego </span>
+                                    <span>California </span>
                                 </div>
                                 <div className='flex gap-2 font-bold text-black'>
                                     <span>District: </span>
-                                    <span>California </span>
+                                    <span>San Diego </span>
                                 </div>                            
                             </div>
                         </div>
