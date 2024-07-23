@@ -97,7 +97,7 @@ const Profile = () => {
                         </div>
                         <div className='px-0 md:px-5 py-2'>
                             {
-                                !userInfo ?
+                                userInfo ?
                                     /* edit info */
                                     <form>
                                         <div className='flex flex-col w-full gap-1 mb-2'>
@@ -149,22 +149,39 @@ const Profile = () => {
                                             <span>Sub District: </span>
                                             <span>La Jolla</span>
                                         </div>
-                                        <div className='flex gap-2'>
-                                            <span>Payment Account: </span>
-                                            <p>
-                                                {
-                                                    status === 'active' ? <span className='bg-green-500 text-white
-                                            text-xs cursor-pointer font-normal ml-2 px-2 py-0.5 rounded'>Active</span> : <span className='bg-blue-500 text-white
-                                            text-xs cursor-pointer font-normal ml-2 px-2 py-0.5 rounded'>Click Active</span>
-                                                }
-                                            </p>
-                                        </div>
                                     </div>
                             }
                         </div>
                     </div>
                 </div>
                 <div className='w-full md:w-6/12'>
+                    <div className='w-full pl-0 md:pl-7 mt-6 md:mt-0'>
+                        <div className='bg-[#6a5fdf]
+                    rounded-md text-[#d0d2d6] p-4'>
+                            <h2 className='text-lg mb-3 font-semibold'>Change Password</h2>
+                            <form>
+                                <div className='flex flex-col w-full gap-1 mb-2'>
+                                    <label htmlFor="email">Email:</label>
+                                    <input type="text" name="email" id="email" placeholder='Email'
+                                        onChange={inputHandler} value={formData.email} className='px-4 py-2 focus:border-indigo-500 outline-none
+                                bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]'/>
+                                </div>
+                                <div className='flex flex-col w-full gap-1 mb-2'>
+                                    <label htmlFor="o_password">Old Password:</label>
+                                    <input type="password" name="o_password" id="o_password" placeholder='Old Password'
+                                        onChange={inputHandler} value={formData.o_password} className='px-4 py-2 focus:border-indigo-500 outline-none
+                                bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]'/>
+                                </div>
+                                <div className='flex flex-col w-full gap-1 mb-2'>
+                                    <label htmlFor="n_password">New Password:</label>
+                                    <input type="password" name="n_password" id="n_password" placeholder='New Password'
+                                        onChange={inputHandler} value={formData.n_password} className='px-4 py-2 focus:border-indigo-500 outline-none
+                                bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]'/>
+                                </div>
+                                <button className='bg-red-500 hover:shadow-red-500/40 hover:shadow-md text-white rounded-md px-7 py-2'>Save Changes</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
 
