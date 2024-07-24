@@ -38,7 +38,6 @@ const EditProduct = () => {
     const [searchValue, setSearchValue] = useState('');
     const [allCategories, setAllCategories] = useState(categories);
 
-    const [images, setImages] = useState([]);
     const [imageShow, setImageShow] = useState([]);
 
     const [formData, setFormData] = useState({

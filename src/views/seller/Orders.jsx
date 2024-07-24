@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
-import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 import Pagination from '../Pagination';
 import Search from '../components/Search';
 
@@ -34,7 +34,7 @@ const Orders = () => {
                                         <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>Pending</td>
                                         <td className='py-1 px-4 font-medium whitespace-nowrap text-center'> 
                                             <div className='flex justify-center items-center gap-4'>                                              
-                                                <Link className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'><FaEye />
+                                                <Link to={`/seller/dashboard/order/details/${index}`} className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'><FaEye />
                                                 </Link>                                                
                                             </div>
                                         </td>
