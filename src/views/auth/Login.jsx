@@ -1,8 +1,18 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
 import { FaGoogle } from "react-icons/fa";
 import { FaFacebookF } from "react-icons/fa";
+import { PropagateLoader } from 'react-spinners';
+import { overrideStyle } from '../../utils/utils';
+import { useDispatch, useSelector } from 'react-redux';
+import toast from 'react-hot-toast';
+import { messageClear, seller_login } from '../../store/Reducers/authReducer';
 const Login = () => {
+    const navigate =useNavigate();    
+    const dispatch = useDispatch();
+
+    const { loader, errorMessage, successMessage } =
+        useSelector(state => state.auth);
     const [data, setData] = useState({
         email: '',
         password: ''
@@ -16,8 +26,21 @@ const Login = () => {
 
     const login = (e)=>{
         e.preventDefault();
-        console.log(data);
+        dispatch(seller_login(data));
     }
+
+    useEffect(() => {
+        if (errorMessage) {
+            toast.error(errorMessage);
+            dispatch(messageClear());
+        }
+        if (successMessage) {
+            toast.success(successMessage);
+            dispatch(messageClear());
+            navigate('/');
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [successMessage, errorMessage]);
     return (
         <div className='min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center'>
             <div className='w-[350px] text-[#ffffff] p-2'>
@@ -33,8 +56,10 @@ const Login = () => {
                             <label htmlFor="password">Password</label>
                             <input type="password" className='px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md' name='password' id='password' placeholder='Password' onChange={inputHandler} value={inputHandler.password} required />
                         </div>                        
-                        <button className='bg-slate-800 w-full hover:shadow-blue-300 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3'>
-                            Sign In
+                        <button className='bg-slate-800 w-full hover:shadow-blue-300 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3' disabled={loader ? true : false}>
+                            {
+                                loader ? <PropagateLoader color='#fff' cssOverride={overrideStyle}></PropagateLoader> : 'Sign In'
+                            }
                         </button>
                         <div className='flex items-center justify-center mb-3 gap-3'>
                             <p>Don´t have an account? <Link to="/register" className="font-bold">Sign Up</Link></p>

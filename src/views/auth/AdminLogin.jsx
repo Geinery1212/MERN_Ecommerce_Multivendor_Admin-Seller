@@ -5,7 +5,7 @@ import { admin_login, messageClear } from '../../store/Reducers/authReducer';
 import { PropagateLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
-
+import { overrideStyle } from '../../utils/utils';
 const AdminLogin = () => {
     //to navigate to other page
     const navigate =useNavigate();
@@ -25,16 +25,8 @@ const AdminLogin = () => {
 
     const login = (e) => {
         e.preventDefault();
-        dispatch(admin_login(data));
-        // console.log(data);
-    }
-    const overrideStyle = {
-        display: 'flex',
-        margin: '0 auto',
-        height: '24px',
-        justifyContent: 'center',
-        alignItem: 'center',
-    }
+        dispatch(admin_login(data));        
+    } 
     useEffect(()=>{
         if(errorMessage){
             toast.error(errorMessage);
@@ -45,7 +37,8 @@ const AdminLogin = () => {
             dispatch(messageClear());
             navigate('/');
         }
-    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[successMessage, errorMessage]);
     return (
         <div className='min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center'>
             <div className='w-[350px] text-[#ffffff] p-2'>

@@ -1,8 +1,19 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
 import { FaGoogle } from "react-icons/fa";
 import { FaFacebookF } from "react-icons/fa";
+import { useDispatch, useSelector } from 'react-redux';
+import { PropagateLoader } from 'react-spinners';
+import { overrideStyle } from '../../utils/utils';
+import { messageClear, seller_register } from '../../store/Reducers/authReducer';
+import toast from 'react-hot-toast';
 const Register = () => {
+    const navigate =useNavigate();    
+    const dispatch = useDispatch();
+
+    const { loader, errorMessage, successMessage } =
+        useSelector(state => state.auth);
+
     const [data, setData] = useState({
         name: '',
         email: '',
@@ -15,10 +26,23 @@ const Register = () => {
         })
     }
 
-    const register = (e)=>{
+    const register = (e) => {
         e.preventDefault();
-        console.log(data);
+        dispatch(seller_register(data));
     }
+
+    useEffect(() => {
+        if (errorMessage) {
+            toast.error(errorMessage);
+            dispatch(messageClear());
+        }
+        if (successMessage) {
+            toast.success(successMessage);
+            dispatch(messageClear());
+            navigate('/');
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [successMessage, errorMessage]);
 
     return (
         <div className='min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center'>
@@ -40,11 +64,13 @@ const Register = () => {
                             <input type="password" className='px-3 py-2 outline-none border border-slate-700 bg-transparent rounded-md' name='password' id='password' placeholder='Password' onChange={inputHandler} value={data.password} required />
                         </div>
                         <div className="flex items-center w-full gap-3 mb-3">
-                            <input type="checkbox" id='checkbox' name='checkbox' className='w-4 h-4 text-blue-600 overflow-hidden bg-gray-200 rounded border-gray-300 focus:ring-blue-500' />
+                            <input type="checkbox" id='checkbox' name='checkbox' className='w-4 h-4 text-blue-600 overflow-hidden bg-gray-200 rounded border-gray-300 focus:ring-blue-500' required/>
                             <label htmlFor="checkbox">I agree to privacy and terms</label>
                         </div>
-                        <button className='bg-slate-800 w-full hover:shadow-blue-300 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3'>
-                            Sign Up
+                        <button className='bg-slate-800 w-full hover:shadow-blue-300 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3' disabled={loader ? true : false}>
+                            {
+                                loader ? <PropagateLoader color='#fff' cssOverride={overrideStyle}></PropagateLoader> : 'Sign Up'
+                            }
                         </button>
                         <div className='flex items-center justify-center mb-3 gap-3'>
                             <p>Already have an account? <Link to="/login" className="font-bold">Sign In</Link></p>
