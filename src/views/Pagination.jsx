@@ -18,7 +18,7 @@ const Pagination = ({ currentPage, setCurrentPage, totalItems, perPage, showItem
         const btns = [];
         for (let index = startPage; index < endPage; index++) {
             btns.push(
-                <li onClick={() => setCurrentPage(index)} className={`${currentPage === index ? 'bg-indigo-300 shadow-lg shadow-indigo-300/50 text-white' : 'bg-slate-500 hover:bg-indigo-400 shadow-md hover:shadow-indigo-500/50 hover:text-white text-[#d0d2d6]'} w-[33px] h-[33px] rounded-full flex justify-center items-center cursor-pointer`}>{index}</li>
+                <li key={index} onClick={() => setCurrentPage(index)} className={`${currentPage === index ? 'bg-indigo-300 shadow-lg shadow-indigo-300/50 text-white' : 'bg-slate-500 hover:bg-indigo-400 shadow-md hover:shadow-indigo-500/50 hover:text-white text-[#d0d2d6]'} w-[33px] h-[33px] rounded-full flex justify-center items-center cursor-pointer`}>{index}</li>
             );
 
         }

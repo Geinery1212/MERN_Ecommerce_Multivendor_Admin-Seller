@@ -38,8 +38,7 @@ export const seller_login = createAsyncThunk(
         // console.log(info);
         try {
             const { data } = await api.post('/seller-login', info, { withCredentials: true });
-            localStorage.setItem('accessToken', data.token);
-            console.log(data);
+            localStorage.setItem('accessToken', data.token);            
             return fulfillWithValue(data);
         } catch (error) {
             console.error(error);
@@ -52,8 +51,7 @@ export const get_user_info = createAsyncThunk(
     'auth/get_user_info',
     async (_, { rejectWithValue, fulfillWithValue }) => {
         try {
-            const { data } = await api.get('/get-info', { withCredentials: true });
-            console.log(data);
+            const { data } = await api.get('/get-info', { withCredentials: true });            
             return fulfillWithValue(data);
         } catch (error) {
             console.error(error);

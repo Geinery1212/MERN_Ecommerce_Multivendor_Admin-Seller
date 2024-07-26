@@ -10,7 +10,7 @@ export const Sidebar = ({ showSidebar, setShowSidebar }) => {
     const { role } = useSelector(state => state.auth);
     useEffect(() => {
         const navs = getNav(role);
-        console.log(navs)
+        // console.log(navs)
         setAllNav(navs);
     }, []);
     return (
