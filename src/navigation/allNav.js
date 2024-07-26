@@ -6,6 +6,8 @@ import { RiDiscountPercentFill } from "react-icons/ri";
 import { ImProfile } from "react-icons/im";
 import { MdPayments } from "react-icons/md";
 import { MdDashboard } from "react-icons/md";
+import { TbMessageCircle2Filled } from "react-icons/tb";
+
 export const allNav = [
     {
         id: 1,
@@ -115,7 +117,7 @@ export const allNav = [
     {
         id: 16,
         title: 'Chat-Support',
-        icon: <IoIosChatbubbles />,
+        icon: <TbMessageCircle2Filled />,
         role: 'seller',
         path: '/seller/dashboard/chat-support'
     },

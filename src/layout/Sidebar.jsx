@@ -3,11 +3,13 @@ import { Link, useLocation } from 'react-router-dom'
 import logo from '../images/logo.png'
 import { getNav } from '../navigation';
 import { IoLogOut } from "react-icons/io5";
+import { useSelector } from 'react-redux';
 export const Sidebar = ({ showSidebar, setShowSidebar }) => {
     const [allNav, setAllNav] = useState([]);
     const { pathname } = useLocation();
+    const { role } = useSelector(state => state.auth);
     useEffect(() => {
-        const navs = getNav('seller');
+        const navs = getNav(role);
         console.log(navs)
         setAllNav(navs);
     }, []);

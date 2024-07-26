@@ -4,7 +4,6 @@ import { lazy } from "react";
  * Make sure components are exported as default components
  * Sixtax: export default ComponentName
  */
-const Home = lazy(() => import("../../views/auth/pages/Home"));
 const SellerDashboard = lazy(() => import("../../views/seller/SellerDashboard"));
 const AddProduct = lazy(() => import("../../views/seller/AddProduct"));
 const Products = lazy(() => import("../../views/seller/Products"));
@@ -16,14 +15,9 @@ const SellerToAdminChat = lazy(() => import("../../views/seller/SellerToAdminCha
 const Profile = lazy(() => import("../../views/seller/Profile"));
 const EditProduct = lazy(() => import("../../views/seller/EditProduct"));
 const OrderDetails = lazy(() => import("../../views/seller/OrderDetails"));
-
-export const sellerRoutes = [
-    {
-        path: '/',
-        element: <Home />,
-        //roles the will be able to access the home
-        ability: ['admin', 'seller']
-    },
+const DeactiveAccount = lazy(() => import("../../views/auth/pages/DeactiveAccount"));
+const PendingAccount = lazy(() => import("../../views/auth/pages/PendingAccount"));
+export const sellerRoutes = [ 
     {
         path: '/seller/dashboard',
         element: <SellerDashboard />,
@@ -58,13 +52,13 @@ export const sellerRoutes = [
         path: '/seller/dashboard/orders',
         element: <Orders />,
         role: 'seller',
-        ability: ['active', 'deactive']
+        visibility: ['active', 'deactive']
     },
     {
         path: '/seller/dashboard/order/details/:orderId',
         element: <OrderDetails />,
         role: 'seller',
-        ability: ['active', 'deactive']
+        visibility: ['active', 'deactive']
     },
     {
         path: '/seller/dashboard/payments',
@@ -88,12 +82,22 @@ export const sellerRoutes = [
         path: '/seller/dashboard/chat-support',
         element: <SellerToAdminChat />,
         role: 'seller',
-        ability: ['active', 'deactive']
+        visibility: ['active', 'deactive', 'pending']
     },
     {
         path: '/seller/dashboard/profile',
         element: <Profile />,
         role: 'seller',
         status: 'active'
-    }
+    },
+    {
+        path: '/seller/account-deactive',
+        element: <DeactiveAccount />,
+        ability: 'seller',
+    },
+    {
+        path: '/seller/account-pending',
+        element: <PendingAccount />,
+        ability: 'seller',
+    },
 ]
