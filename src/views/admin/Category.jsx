@@ -88,7 +88,7 @@ const Category = () => {
                                     {
                                         categories.map((element, index) => {
                                             return <tr key={element._id}>
-                                                <td className='py-1 px- font-medium whitespace-nowrap'>{element._id}</td>
+                                                <td className='py-1 px- font-medium whitespace-nowrap'>{index + 1}</td>
                                                 <td className='py-1 px-4 font-medium whitespace-nowrap'>
                                                     <img src={element.image} alt={element.name} className='w-[45px] h-[45px]' />
                                                 </td>

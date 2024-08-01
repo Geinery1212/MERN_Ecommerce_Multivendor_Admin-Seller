@@ -1,14 +1,29 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import Pagination from '../Pagination';
 import Search from '../components/Search';
+import { useDispatch, useSelector } from 'react-redux';
+import { get_products } from '../../store/Reducers/productReducer';
 
 const Products = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(5);
     const [show, setShow] = useState(false);
     const [searchValue, setSearchValue] = useState('');
+    const dispatch = useDispatch();
+    // const [allProducts, setAllProducts] = useState([]);
+    let { loader, totalProducts, products } = useSelector(state => state.product);
+    useEffect(() => {
+        console.log('working');
+        const obj = {
+            perPage: parseInt(perPage),
+            page: parseInt(currentPage),
+            searchValue
+        }
+        dispatch(get_products(obj));
+    }, [perPage, currentPage, searchValue]);
+
     return (
         <div className='px-2 lg:px-7 pt-5'>
             <h1 className='text-[#000] font-semibold text-lg mb-3'>All Products</h1>
@@ -31,20 +46,20 @@ const Products = () => {
                         </thead>
                         <tbody>
                             {
-                                [1, 2, 3, 4, 5].map((element, index) => {
+                                products.map((element, index) => {
                                     return <tr key={index}>
-                                        <td className='py-1 px- font-medium whitespace-nowrap text-center'>{element}</td>
+                                        <td className='py-1 px- font-medium whitespace-nowrap text-center'>{index + 1}</td>
                                         <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>
                                             <div className='flex justify-center items-center'>
-                                                <img src={require(`../../images/category/${index + 1}.jpg`)} alt={`${index + 1}.jpg`} className='w-[45px] h-[45px]' />
+                                                <img src={element.images[0]} className='w-[45px] h-[45px]' />
                                             </div>
                                         </td>
-                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>Kalep</td>
-                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>T-shirt</td>
-                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>Nike</td>
-                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>$550</td>
-                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>19%</td>
-                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>32</td>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{element.name.length > 15 ? element?.name?.slice(0, 15) + '...' : element.name}</td>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{element.category}</td>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{element.brand}</td>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>${element.price}</td>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{element.discount === 0 ? 'No Discount' : element.discount + '%'}</td>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{element.discount}</td>
                                         <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>
                                             <div className='flex justify-center items-center gap-4'>
                                                 <Link to={`/seller/dashboard/edit-product/${index}`} className='p-[6px] bg-yellow-500 rounded hover:shadow-lg hover:shadow-yellow-500/50'><FaEdit />
@@ -62,7 +77,7 @@ const Products = () => {
                     </table>
                 </div>
                 <div className='w-full flex justify-end mt-4 bottom-4 right-4'>
-                    <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalItems={50} perPage={perPage} showItem={3} />
+                    {totalProducts > perPage && <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalItems={50} perPage={perPage} showItem={3} />}
                 </div>
             </div>
         </div>
