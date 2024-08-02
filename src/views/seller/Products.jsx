@@ -15,7 +15,6 @@ const Products = () => {
     // const [allProducts, setAllProducts] = useState([]);
     let { loader, totalProducts, products } = useSelector(state => state.product);
     useEffect(() => {
-        console.log('working');
         const obj = {
             perPage: parseInt(perPage),
             page: parseInt(currentPage),
@@ -62,7 +61,7 @@ const Products = () => {
                                         <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{element.discount}</td>
                                         <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>
                                             <div className='flex justify-center items-center gap-4'>
-                                                <Link to={`/seller/dashboard/edit-product/${index}`} className='p-[6px] bg-yellow-500 rounded hover:shadow-lg hover:shadow-yellow-500/50'><FaEdit />
+                                                <Link to={`/seller/dashboard/edit-product/${element._id}`} className='p-[6px] bg-yellow-500 rounded hover:shadow-lg hover:shadow-yellow-500/50'><FaEdit />
                                                 </Link>
                                                 <Link className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'><FaEye />
                                                 </Link>

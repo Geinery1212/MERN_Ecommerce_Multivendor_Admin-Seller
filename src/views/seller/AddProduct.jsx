@@ -9,7 +9,7 @@ import { overrideStyle } from '../../utils/utils';
 import toast from 'react-hot-toast';
 const AddProduct = () => {
     const dispatch = useDispatch();
-    let { loader, errorMessage, successMessage, totalProducts } = useSelector(state => state.product);
+    let { loader, errorMessage, successMessage } = useSelector(state => state.product);
     const { categories } = useSelector(state => state.category);
     const [showCategory, setShowCategory] = useState(false);
     const [category, setCategory] = useState('');
@@ -129,6 +129,7 @@ const AddProduct = () => {
             perPage: '',
             page: ''
         }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);        
     
     return (

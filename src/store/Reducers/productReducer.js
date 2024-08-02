@@ -23,11 +23,65 @@ export const get_products = createAsyncThunk(
     'product/get_products',
     async ({ perPage, page, searchValue }, { rejectWithValue, fulfillWithValue }) => {
         try {
-            console.log(page);
+            // console.log(page);
             const { data } = await api.get(`/products-get?page=${page}&perPage=${perPage}&searchValue=${searchValue}`,
                 { withCredentials: true });
 
-            console.log(data);
+            // console.log(data);
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const get_product = createAsyncThunk(
+    'product/get_product',
+    async ({ productId }, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            // console.log(productId);
+            const { data } = await api.get(`/product-get/${productId}`,
+                { withCredentials: true });
+
+            // console.log(data);
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+export const update_product = createAsyncThunk(
+    'product/update_product',
+    async (product, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            // console.log(productId);
+            const { data } = await api.post(`/product-update`, product,
+                { withCredentials: true });
+
+            // console.log(data);
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const product_image_update = createAsyncThunk(
+    'product/product_image_update',
+    async ({ oldImage, newImage, productId }, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            const formData = new FormData();
+            formData.append('oldImage', oldImage);
+            formData.append('newImage', newImage);
+            formData.append('productId', productId);
+            // console.log(productId);
+            const { data } = await api.post(`/product-image-update`, formData,
+                { withCredentials: true });
+
+            // console.log(data);
             return fulfillWithValue(data);
         } catch (error) {
             console.error(error);
@@ -42,6 +96,7 @@ export const productReducer = createSlice({
         errorMessage: '',
         loader: false,
         products: [],
+        product: {},
         totalProducts: 0
     },
     reducers: {
@@ -64,6 +119,31 @@ export const productReducer = createSlice({
                 state.totalProducts = payload.totalProducts;
                 state.products = payload.products;
             })
+            .addCase(get_product.fulfilled, (state, { payload }) => {
+                state.product = payload.product;
+            })
+
+        builder.addCase(update_product.pending, (state, { payload }) => {
+            state.loader = true;
+        }).addCase(update_product.rejected, (state, { payload }) => {
+            state.loader = false;
+            state.errorMessage = payload.error;
+        }).addCase(update_product.fulfilled, (state, { payload }) => {
+            state.loader = false;
+            state.successMessage = payload.message;
+            state.product = payload.product;
+        })
+
+        builder.addCase(product_image_update.pending, (state, { payload }) => {
+            state.loader = true;
+        }).addCase(product_image_update.rejected, (state, { payload }) => {
+            state.loader = false;
+            state.errorMessage = payload.error;
+        }).addCase(product_image_update.fulfilled, (state, { payload }) => {
+            state.loader = false;
+            state.successMessage = payload.message;
+            state.product = payload.product;
+        })
     }
 });
 export const { messageClear } = productReducer.actions;
