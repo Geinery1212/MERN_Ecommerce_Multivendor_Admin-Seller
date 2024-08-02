@@ -59,6 +59,38 @@ export const get_user_info = createAsyncThunk(
         }
     }
 );
+
+export const profile_image_upload = createAsyncThunk(
+    'auth/profile_image_upload',
+    async (formData, { rejectWithValue, fulfillWithValue }) => {
+        try {           
+            // console.log(productId);
+            const { data } = await api.post(`/profile-image-update`, formData,
+                { withCredentials: true });
+
+            console.log(data);
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const add_shop_data = createAsyncThunk(
+    'auth/add_shop_data',
+    async (info, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            // console.log(info);
+            const { data } = await api.post('/add-shop-data', info, { withCredentials: true });
+            // console.log(data);
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
 const returnRole = (token) => {
     if (token) {
         const decodeToken = jwtDecode(token);
@@ -127,6 +159,28 @@ export const authReducer = createSlice({
 
             .addCase(get_user_info.fulfilled, (state, { payload }) => {
                 state.loader = false;
+                state.userInfo = payload.userInfo;
+            })
+
+            .addCase(profile_image_upload.pending, (state, { payload }) => {
+                state.loader = true;
+            }).addCase(profile_image_upload.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload.error;
+            }).addCase(profile_image_upload.fulfilled, (state, { payload }) => {
+                state.loader = false;
+                state.successMessage = payload.message;
+                state.userInfo = payload.userInfo;
+            })
+
+            builder.addCase(add_shop_data.pending, (state, { payload }) => {
+                state.loader = true;
+            }).addCase(add_shop_data.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload.error;
+            }).addCase(add_shop_data.fulfilled, (state, { payload }) => {
+                state.loader = false;
+                state.successMessage = payload.message;
                 state.userInfo = payload.userInfo;
             })
     }
