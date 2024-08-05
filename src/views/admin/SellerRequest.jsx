@@ -1,22 +1,38 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { FaEye } from "react-icons/fa";
 import Pagination from '../Pagination';
+import { useDispatch, useSelector } from 'react-redux';
+import { get_sellers } from '../../store/Reducers/sellerReducer';
+import Search from '../components/Search';
 const SellerRequest = () => {
+    const dispatch = useDispatch();
+    let { loader, totalSellers, sellers } = useSelector(state => state.seller);
     const [currentPage, setCurrentPage] = useState(1);
+    const [searchValue, setSearchValue] = useState('');
     const [perPage, setPerPage] = useState(5);
+    useEffect(() => {
+        const obj = {
+            perPage: parseInt(perPage),
+            page: parseInt(currentPage),
+            searchValue
+        }
+        dispatch(get_sellers(obj));
+    }, [perPage, currentPage, searchValue]);
+
+    useEffect(() => {
+        const obj = {
+            perPage: parseInt(perPage),
+            page: parseInt(currentPage),
+            searchValue
+        }
+        dispatch(get_sellers(obj));
+    }, []);
     return (
         <div className='px-2 lg:px-7 pt-5'>
             <h1 className='text-[20px] font-bold mb-3'>Sellers Request</h1>
             <div className='w-full p-4 bg-[#6a5fdf] rounded-md'>
-                <div className='flex justify-between items-center'>
-                    <select onClick={(e) => setPerPage(parseInt(e.target.value))} className='px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]'>
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                    </select>
-                    <input type="text" placeholder='search' className='px-4 py-2 focus:border-indigo-500 outline-none bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]' />
-                </div>
+                <Search setPerPage={setPerPage} setSearchValue={setSearchValue} searchValue={searchValue} />
                 <div className='relative overflow-x-auto'>
                     <table className='w-full text-sm text-[#d0d3d6]'>
                         <thead className='uppercase border-b border-slate-700 text-[#d0d3d6]'>
@@ -31,16 +47,16 @@ const SellerRequest = () => {
                         </thead>
                         <tbody className='text-center'>
                             {
-                                [1, 2, 3, 4, 5].map((element, index) => {
-                                    return <tr key={index} className='border-b border-slate-700'>
-                                        <td className='py-2 px-4 font-medium whitespace-nowrap'>{element}</td>                                        
-                                        <td className='py-2 px-4 font-medium whitespace-nowrap'>Ervin Diaz</td>
-                                        <td className='py-2 px-4 font-medium whitespace-nowrap'>ervin.diaz@gmail.com</td>
-                                        <td className='py-2 px-4 font-medium whitespace-nowrap'>Inactive</td>
-                                        <td className='py-2 px-4 font-medium whitespace-nowrap'>Pending</td>                                                                            
-                                        <td className='py-2 px-4 font-medium whitespace-nowrap'>
+                                (totalSellers > 0) && sellers.map((element, index) => {
+                                    return <tr key={index}>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap'>{index + 1}</td>                                        
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap'>{element.name}</td>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap'>{element.email}</td>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap'>{element.payment}</td>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap'>{element.status}</td>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap'>
                                             <div className='flex justify-center items-center gap-4'>
-                                                <Link to={"/admin/dashboard/seller/details/" + index} className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'><FaEye />
+                                                <Link to={`/admin/dashboard/seller/details/${element._id}`} className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'><FaEye />
                                                 </Link>
                                             </div>
                                         </td>

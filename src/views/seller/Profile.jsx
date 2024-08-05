@@ -11,7 +11,7 @@ const Profile = () => {
     const { userInfo, loader, errorMessage, successMessage } = useSelector(state => state.auth);
 
     const [formData, setFormData] = useState({
-        shop: '',
+        shopName: '',
         state: '',
         district: '',
         subdistrict: ''
@@ -132,9 +132,9 @@ const Profile = () => {
                                     /* edit info */
                                     <form onSubmit={add}>
                                         <div className='flex flex-col w-full gap-1 mb-2'>
-                                            <label htmlFor="shop">Shop Name:</label>
-                                            <input type="text" name="shop" id="shop" placeholder='Shop Name'
-                                                onChange={inputHandler} value={formData.shop} className='px-4 py-2 focus:border-indigo-500 outline-none
+                                            <label htmlFor="shopName">Shop Name:</label>
+                                            <input type="text" name="shopName" id="shopName" placeholder='Shop Name'
+                                                onChange={inputHandler} value={formData.shopName} className='px-4 py-2 focus:border-indigo-500 outline-none
                                 bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]'/>
                                         </div>
                                         <div className='flex flex-col w-full gap-1 mb-2'>
@@ -170,7 +170,7 @@ const Profile = () => {
                                         </span>
                                         <div className='flex gap-2'>
                                             <span>Shop Name: </span>
-                                            <span>{userInfo.shopInfo?.name}</span>
+                                            <span>{userInfo.shopInfo?.shopName}</span>
                                         </div>
                                         <div className='flex gap-2'>
                                             <span>State: </span>
