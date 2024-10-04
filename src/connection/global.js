@@ -1,0 +1,1 @@
+export const socket_connection = 'http://localhost:5000';

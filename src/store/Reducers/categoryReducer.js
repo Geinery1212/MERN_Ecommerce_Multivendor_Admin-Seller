@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../../api/api";
+import api from "../../connection/api";
 //asynchronous aperations
 export const add_category = createAsyncThunk(
     'category/add',
