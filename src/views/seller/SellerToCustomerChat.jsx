@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { IoClose } from "react-icons/io5";
 import adminImage from '../../images/admin.jpg';
 import demoImage from '../../images/demo.jpg';
@@ -7,49 +7,88 @@ import { useDispatch, useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
 import { socket_connection } from '../../connection/global';
 import { Link, useParams } from 'react-router-dom';
-import { get_customer_friends, send_message_to_customer } from '../../store/Reducers/chat/chatSellerReducer';
+import { addNewMessage, chatMessageClear, get_customer_friends, send_message_to_customer } from '../../store/Reducers/chat/chatSellerReducer';
 import { FadeLoader } from 'react-spinners';
 import { messageClear } from '../../store/Reducers/authReducer';
+import toast from 'react-hot-toast';
 const SellerToCustomerChat = () => {
     const [show, setShow] = useState(false);
     const dispatch = useDispatch();
     const [newMessageText, setNewMessageText] = useState('');
+    const [newMessageReceived, setNewMessageReceived] = useState({});
     const { customerId } = useParams();
     const { userInfo } = useSelector(state => state.auth);
     const { chatLoader, chatSuccessMessage, chatErrorMessage, myFriends, friendMessages, currentFriend } = useSelector(state => state.chatSellerReducer);
-    const socket = io(socket_connection);
+
+    const socketRef = useRef(null);
+    const scrollRef = useRef();
+
+    useEffect(() => {
+        socketRef.current = io(socket_connection); // Initialize socket only once
+
+        if (userInfo) {
+            socketRef.current.emit('add_seller', userInfo); // Emit event when userInfo is available
+        }
+
+        socketRef.current.on('customer_message', msg => {
+            setNewMessageReceived(msg); // Handle customer messages
+        });
+
+        socketRef.current.on('connect_error', (err) => {
+            console.error('Connection error:', err);
+            toast.error('Connection failed. Please try again later.');
+        });
+
+        return () => {
+            socketRef.current.disconnect(); // Clean up socket on component unmount
+        };
+    }, [userInfo]);
+
+    useEffect(() => {
+        if (chatSuccessMessage !== '' && friendMessages.length > 0) {
+            const lastMessage = friendMessages[friendMessages.length - 1];            
+            socketRef.current.emit('send_seller_message', lastMessage); // Emit message to client
+            dispatch(messageClear());
+        }
+    }, [chatSuccessMessage, friendMessages, dispatch]);
 
     const send = (e) => {
         e.preventDefault();
         if (newMessageText) {
             dispatch(send_message_to_customer({
-                'sellerId': userInfo._id,
+                sellerId: userInfo._id,
                 newMessageText,
                 customerId,
-                'name': userInfo.name
+                name: userInfo.name
             }));
             setNewMessageText('');
         }
-    }
-    useEffect(() => {
-        socket.emit('add_seller', userInfo);
-    }, [socket, userInfo]);
+    };
 
     useEffect(() => {
         if (userInfo) {
             dispatch(get_customer_friends({
-                'sellerId': userInfo._id,
+                sellerId: userInfo._id,
                 customerId
             }));
         }
     }, [dispatch, customerId, userInfo]);
 
     useEffect(() => {
-        if (chatSuccessMessage) {
-            socket.emit('send_seller_message', friendMessages[friendMessages.length - 1]);            
-            dispatch(messageClear());
+        if (newMessageReceived && newMessageReceived.senderName) {
+            if (newMessageReceived.senderId === customerId && newMessageReceived.receiverId === userInfo._id) {
+                dispatch(addNewMessage(newMessageReceived)); // Add new message to chat
+            } else {
+                toast.success(`${newMessageReceived.senderName} sent a message`);
+                dispatch(chatMessageClear());
+            }            
         }
-    }, [chatSuccessMessage, dispatch, friendMessages, socket]);
+    }, [newMessageReceived, customerId, userInfo, dispatch]);
+
+    useEffect(() => {
+        scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [friendMessages]);
+
     return (
         <div>
             {
@@ -84,12 +123,12 @@ const SellerToCustomerChat = () => {
                             <div className='w-full md:w-[calc(100%-200px)] md:pl-4'>
                                 <div className='flex justify-between items-center'>
                                     {
-                                        customerId && <div className='flex justify-start items-center gap-3'>
+                                        currentFriend && <div className='flex justify-start items-center gap-3'>
                                             <div className='relative'>
                                                 <img src={demoImage} alt="" className='w-[45px] h-[45px] border-green-500 border-2 max-w-[45px] p-[2px] rounded-full' />
                                                 <div className='w-[10px] h-[10px] bg-green-500 rounded-full absolute right-0 bottom-0'></div>
                                             </div>
-                                            <h2 className='text-base text-white font-semibold'>Jose Arcos</h2>
+                                            <h2 className='text-base text-white font-semibold'>{currentFriend.name}</h2>
                                         </div>
                                     }
                                     <div className='w-[35px] flex md:hidden h-[35px] rounded-md bg-blue-500 
@@ -99,9 +138,9 @@ const SellerToCustomerChat = () => {
                                 </div>
                                 <div className='py-4'>
                                     <div className='bg-[#475569] h-[calc(100vh-290px)] rounded-md p-3 overflow-y-auto'>
-                                        {friendMessages && friendMessages.map((msg, i) => {
+                                        {friendMessages ? friendMessages.map((msg, i) => {
                                             if (msg.senderId === userInfo._id) {
-                                                return <div key={i} className='w-full flex justify-end items-center'>
+                                                return <div key={i} ref={scrollRef} className='w-full flex justify-end items-center'>
                                                     <div className='flex justify-start items-start gap-2 md:px-3 py-2 max-w-full lg:max-w-[85%]'>
                                                         <div className='flex justify-center items-start flex-col w-full bg-red-500 shadow-lg shadow-red-500/50 text-white
                                         py-1 px-2 rounded-md'>
@@ -113,7 +152,7 @@ const SellerToCustomerChat = () => {
                                                 </div>
 
                                             } else {
-                                                return <div key={i} className='w-full flex justify-start items-center'>
+                                                return <div key={i} ref={scrollRef} className='w-full flex justify-start items-center'>
                                                     <div className='flex justify-start items-start gap-2 md:px-3 py-2 max-w-full lg:max-w-[85%]'>
                                                         <img src={demoImage} alt="" className='w-[38px] h-[38px] border-2 border-white rounded-full max-w-[38px] p-[3px]' />
                                                         <div className='flex justify-center items-start flex-col w-full bg-blue-500 shadow-lg shadow-blue-500/50 text-white
@@ -123,16 +162,16 @@ const SellerToCustomerChat = () => {
                                                     </div>
                                                 </div>
                                             }
-                                        })}
+                                        }) : <p className="text-white flex justify-center items-center h-[calc(100vh-290px)] ">Select a customer</p>}
 
                                     </div>
                                 </div>
-                                <form className='flex gap-3' onSubmit={send}>
+                                {customerId && <form className='flex gap-3' onSubmit={send}>
                                     <input value={newMessageText} onChange={(e) => setNewMessageText(e.target.value)} type="text" className='w-full flex justify-between px-2 border border-slate-700 items-center py-[5px] focus:border-blue-500
                             rounded-md outline-none bg-transparent text-[#d0d2d6]' placeholder='Input Your Message' />
                                     <button className='shadow-lg bg-[#06b6d4] hover:shadow-cyan-500/50 text-semibold w-[75px] h-[35px]
                             rounded-md text-white flex justify-center items-center'>Send</button>
-                                </form>
+                                </form>}
                             </div>
                         </div>
 

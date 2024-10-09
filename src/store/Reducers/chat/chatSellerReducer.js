@@ -6,8 +6,8 @@ export const get_customer_friends = createAsyncThunk(
     async (obj, { rejectWithValue, fulfillWithValue }) => {
         try {
             const { sellerId, customerId } = obj;
-            const url = customerId 
-                ? `/chat/seller/get-customer-friends/${sellerId}/${customerId}` 
+            const url = customerId
+                ? `/chat/seller/get-customer-friends/${sellerId}/${customerId}`
                 : `/chat/seller/get-customer-friends/${sellerId}`;
 
             const { data } = await api.get(url, { withCredentials: true });
@@ -49,9 +49,12 @@ export const chatSellerReducer = createSlice({
 
     },
     reducers: {
-        productMessageClear: (state, _) => {
+        chatMessageClear: (state, _) => {
             state.chatErrorMessage = '';
             state.chatSuccessMessage = '';
+        },
+        addNewMessage: (state, { payload }) => {
+            state.friendMessages = [...state.friendMessages, payload];
         }
     },
     extraReducers: (builder) => {
@@ -66,7 +69,7 @@ export const chatSellerReducer = createSlice({
                 state.friendMessages = payload.messages;
                 state.currentFriend = payload.currentFriend;
             })
-            .addCase(send_message_to_customer.fulfilled, (state, { payload }) => {                
+            .addCase(send_message_to_customer.fulfilled, (state, { payload }) => {
                 state.myFriends = payload.myFriends;
                 state.friendMessages = [...state.friendMessages, payload.message];
                 state.chatSuccessMessage = 'Message sended successfully';
@@ -74,5 +77,5 @@ export const chatSellerReducer = createSlice({
 
     }
 });
-export const { chatMessageClear } = chatSellerReducer.actions;
+export const { chatMessageClear, addNewMessage } = chatSellerReducer.actions;
 export default chatSellerReducer.reducer;
