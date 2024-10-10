@@ -76,5 +76,11 @@ export const adminRoutes = [
         element: <ChatSeller />,
         //roles the will be able to access the home
         role: 'admin'
+    },
+    {
+        path: '/admin/dashboard/chat-seller/:sellerId',
+        element: <ChatSeller />,
+        //roles the will be able to access the home
+        role: 'admin'
     }
 ]

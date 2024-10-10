@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { IoClose } from "react-icons/io5";
-import adminImage from '../../images/admin.jpg';
-import demoImage from '../../images/demo.jpg';
+import demoImage from '../../images/admin.jpg';
 import { FaList } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
@@ -16,6 +15,7 @@ const SellerToCustomerChat = () => {
     const dispatch = useDispatch();
     const [newMessageText, setNewMessageText] = useState('');
     const [newMessageReceived, setNewMessageReceived] = useState({});
+    const [allCustomersActive, setAllCustomersActive] = useState([]);
     const { customerId } = useParams();
     const { userInfo } = useSelector(state => state.auth);
     const { chatLoader, chatSuccessMessage, chatErrorMessage, myFriends, friendMessages, currentFriend } = useSelector(state => state.chatSellerReducer);
@@ -39,6 +39,10 @@ const SellerToCustomerChat = () => {
             toast.error('Connection failed. Please try again later.');
         });
 
+        socketRef.current.on('activeCustomers', allCustomers => {
+            setAllCustomersActive(allCustomers);
+        });
+
         return () => {
             socketRef.current.disconnect(); // Clean up socket on component unmount
         };
@@ -46,7 +50,7 @@ const SellerToCustomerChat = () => {
 
     useEffect(() => {
         if (chatSuccessMessage !== '' && friendMessages.length > 0) {
-            const lastMessage = friendMessages[friendMessages.length - 1];            
+            const lastMessage = friendMessages[friendMessages.length - 1];
             socketRef.current.emit('send_seller_message', lastMessage); // Emit message to client
             dispatch(messageClear());
         }
@@ -81,7 +85,7 @@ const SellerToCustomerChat = () => {
             } else {
                 toast.success(`${newMessageReceived.senderName} sent a message`);
                 dispatch(chatMessageClear());
-            }            
+            }
         }
     }, [newMessageReceived, customerId, userInfo, dispatch]);
 
@@ -106,10 +110,10 @@ const SellerToCustomerChat = () => {
                                     </div>
                                     {
                                         myFriends && myFriends.map((friend, i) => <Link key={i} to={'/seller/dashboard/chat-customer/' + friend.fdId}>
-                                            <div className='h-[60px] flex justify-start gap-2 items-center text-white px-2 py-2 rounded-md cursor-pointer bg-[#8288ed]'>
+                                                <div className={`h-[60px] flex justify-start gap-2 items-center text-white px-2 py-2 rounded-md cursor-pointer ${(currentFriend && friend.fdId === currentFriend.fdId) && 'bg-[#8288ed]'}`}>
                                                 <div className='relative'>
-                                                    <img src={adminImage} alt="" className='w-[38px] h-[38px] max-w-[38px] border-white border-2 p-[2px] rounded-full' />
-                                                    <div className='w-[10px] h-[10px] bg-green-500 rounded-full absolute right-0 bottom-0'></div>
+                                                    <img src={demoImage} alt="" className='w-[38px] h-[38px] max-w-[38px] border-white border-2 p-[2px] rounded-full' />
+                                                    {allCustomersActive.some((e) => e.customerId === friend.fdId) && <div className='w-[10px] h-[10px] bg-green-500 rounded-full absolute right-0 bottom-0'></div>}
                                                 </div>
                                                 <div className='flex justify-center items-start flex-col w-full'>
                                                     <div className='flex justify-between items-center w-full'>
@@ -125,8 +129,8 @@ const SellerToCustomerChat = () => {
                                     {
                                         currentFriend && <div className='flex justify-start items-center gap-3'>
                                             <div className='relative'>
-                                                <img src={demoImage} alt="" className='w-[45px] h-[45px] border-green-500 border-2 max-w-[45px] p-[2px] rounded-full' />
-                                                <div className='w-[10px] h-[10px] bg-green-500 rounded-full absolute right-0 bottom-0'></div>
+                                                <img src={demoImage} alt="" className={`w-[45px] h-[45px] ${allCustomersActive.some(e => e.customerId === currentFriend.fdId) ? 'border-green-500' : 'border-white'} border-2 max-w-[45px] p-[2px] rounded-full`} />
+                                                {allCustomersActive.some(e => e.customerId === currentFriend.fdId) && <div className='w-[10px] h-[10px] bg-green-500 rounded-full absolute right-0 bottom-0'></div>}
                                             </div>
                                             <h2 className='text-base text-white font-semibold'>{currentFriend.name}</h2>
                                         </div>
@@ -146,7 +150,7 @@ const SellerToCustomerChat = () => {
                                         py-1 px-2 rounded-md'>
                                                             {msg.message}
                                                         </div>
-                                                        <img src={adminImage} alt="" className='w-[38px] h-[38px] border-2 border-white rounded-full max-w-[38px] p-[3px]' />
+                                                        <img src={userInfo.image ? userInfo.image : demoImage} alt="" className='w-[38px] h-[38px] border-2 border-white rounded-full max-w-[38px] p-[3px]' />
 
                                                     </div>
                                                 </div>
@@ -154,7 +158,7 @@ const SellerToCustomerChat = () => {
                                             } else {
                                                 return <div key={i} ref={scrollRef} className='w-full flex justify-start items-center'>
                                                     <div className='flex justify-start items-start gap-2 md:px-3 py-2 max-w-full lg:max-w-[85%]'>
-                                                        <img src={demoImage} alt="" className='w-[38px] h-[38px] border-2 border-white rounded-full max-w-[38px] p-[3px]' />
+                                                        <img src={currentFriend.image ? currentFriend.image : demoImage} alt="" className='w-[38px] h-[38px] border-2 border-white rounded-full max-w-[38px] p-[3px]' />
                                                         <div className='flex justify-center items-start flex-col w-full bg-blue-500 shadow-lg shadow-blue-500/50 text-white
                                             py-1 px-2 rounded-md'>
                                                             {msg.message}
