@@ -98,8 +98,7 @@ export const logout = createAsyncThunk(
     async ({ navigate, role }, { rejectWithValue, fulfillWithValue }) => {
         try {            
             const { data } = await api.get('/dashboard/logout', { withCredentials: true });                
-            if (role === 'admin') {
-                console.log('entered here kakkaak');
+            if (role === 'admin') {                
                 navigate('/admin/login');
             } else {
                 navigate('/login');

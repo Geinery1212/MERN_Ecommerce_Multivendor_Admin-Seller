@@ -2,13 +2,37 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../connection/api";
 //asynchronous aperations
 
-export const get_sellers = createAsyncThunk(
-    'seller/get_sellers',
+export const get_pending_sellers = createAsyncThunk(
+    'seller/get_pending_sellers',
+    async ({ perPage, page, searchValue }, { rejectWithValue, fulfillWithValue }) => {        
+        try {
+            const { data } = await api.get(`/sellers-get-pending?page=${page}&perPage=${perPage}&searchValue=${searchValue}`, { withCredentials: true });            
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const get_active_sellers = createAsyncThunk(
+    'seller/get_active_sellers',
+    async ({ perPage, page, searchValue }, { rejectWithValue, fulfillWithValue }) => {        
+        try {
+            const { data } = await api.get(`/sellers-get-active?page=${page}&perPage=${perPage}&searchValue=${searchValue}`, { withCredentials: true });            
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const get_deactive_sellers = createAsyncThunk(
+    'seller/get_deactive_sellers',
     async ({ perPage, page, searchValue }, { rejectWithValue, fulfillWithValue }) => {
         try {
-            const { data } = await api.get(`/sellers-get?page=${page}
-                &perPage=${perPage}&searchValue=${searchValue}`, { withCredentials: true });
-            // console.log(data);
+            const { data } = await api.get(`/sellers-get-deactive?page=${page}&perPage=${perPage}&searchValue=${searchValue}`, { withCredentials: true });                        
             return fulfillWithValue(data);
         } catch (error) {
             console.error(error);
@@ -69,7 +93,17 @@ export const sellerReducer = createSlice({
     extraReducers: (builder) => {
         builder
 
-            .addCase(get_sellers.fulfilled, (state, { payload }) => {
+            .addCase(get_pending_sellers.fulfilled, (state, { payload }) => {
+                state.totalSellers = payload.totalSellers;
+                state.sellers = payload.sellers;
+            })
+
+            .addCase(get_active_sellers.fulfilled, (state, { payload }) => {
+                state.totalSellers = payload.totalSellers;
+                state.sellers = payload.sellers;
+            })
+
+            .addCase(get_deactive_sellers.fulfilled, (state, { payload }) => {
                 state.totalSellers = payload.totalSellers;
                 state.sellers = payload.sellers;
             })

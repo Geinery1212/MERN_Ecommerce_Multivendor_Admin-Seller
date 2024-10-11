@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { FaEye } from "react-icons/fa";
 import Pagination from '../Pagination';
 import { useDispatch, useSelector } from 'react-redux';
-import { get_sellers } from '../../store/Reducers/sellerReducer';
+import { get_pending_sellers } from '../../store/Reducers/sellerReducer';
 import Search from '../components/Search';
 const SellerRequest = () => {
     const dispatch = useDispatch();
@@ -17,7 +17,7 @@ const SellerRequest = () => {
             page: parseInt(currentPage),
             searchValue
         }
-        dispatch(get_sellers(obj));
+        dispatch(get_pending_sellers(obj));
     }, [perPage, currentPage, searchValue]);
 
     useEffect(() => {
@@ -26,7 +26,7 @@ const SellerRequest = () => {
             page: parseInt(currentPage),
             searchValue
         }
-        dispatch(get_sellers(obj));
+        dispatch(get_pending_sellers(obj));
     }, []);
     return (
         <div className='px-2 lg:px-7 pt-5'>
@@ -49,7 +49,7 @@ const SellerRequest = () => {
                             {
                                 (totalSellers > 0) && sellers.map((element, index) => {
                                     return <tr key={index}>
-                                        <td className='py-1 px-4 font-medium whitespace-nowrap'>{index + 1}</td>                                        
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap'>{index + 1}</td>
                                         <td className='py-1 px-4 font-medium whitespace-nowrap'>{element.name}</td>
                                         <td className='py-1 px-4 font-medium whitespace-nowrap'>{element.email}</td>
                                         <td className='py-1 px-4 font-medium whitespace-nowrap'>{element.payment}</td>
@@ -67,7 +67,7 @@ const SellerRequest = () => {
                     </table>
                 </div>
                 <div className='w-full flex justify-end mt-4 bottom-4 right-4'>
-                    <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalItems={50} perPage={perPage} showItem={3} />
+                    {totalSellers > 0 && <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalItems={totalSellers} perPage={perPage} showItem={Math.floor(totalSellers / perPage)} />}
                 </div>
             </div>
         </div>
