@@ -38,7 +38,7 @@ export const seller_login = createAsyncThunk(
         // console.log(info);
         try {
             const { data } = await api.post('/seller-login', info, { withCredentials: true });
-            localStorage.setItem('accessToken', data.token);            
+            localStorage.setItem('accessToken', data.token);
             return fulfillWithValue(data);
         } catch (error) {
             console.error(error);
@@ -51,7 +51,7 @@ export const get_user_info = createAsyncThunk(
     'auth/get_user_info',
     async (_, { rejectWithValue, fulfillWithValue }) => {
         try {
-            const { data } = await api.get('/get-info', { withCredentials: true });            
+            const { data } = await api.get('/get-info', { withCredentials: true });
             return fulfillWithValue(data);
         } catch (error) {
             console.error(error);
@@ -63,7 +63,7 @@ export const get_user_info = createAsyncThunk(
 export const profile_image_upload = createAsyncThunk(
     'auth/profile_image_upload',
     async (formData, { rejectWithValue, fulfillWithValue }) => {
-        try {           
+        try {
             // console.log(productId);
             const { data } = await api.post(`/profile-image-update`, formData,
                 { withCredentials: true });
@@ -84,6 +84,26 @@ export const add_shop_data = createAsyncThunk(
             // console.log(info);
             const { data } = await api.post('/add-shop-data', info, { withCredentials: true });
             // console.log(data);
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+
+export const logout = createAsyncThunk(
+    'auth/logout',
+    async ({ navigate, role }, { rejectWithValue, fulfillWithValue }) => {
+        try {            
+            const { data } = await api.get('/dashboard/logout', { withCredentials: true });                
+            if (role === 'admin') {
+                console.log('entered here kakkaak');
+                navigate('/admin/login');
+            } else {
+                navigate('/login');
+            }            
             return fulfillWithValue(data);
         } catch (error) {
             console.error(error);
@@ -118,7 +138,7 @@ export const authReducer = createSlice({
         messageClear: (state, _) => {
             state.errorMessage = '';
             state.successMessage = '';
-        }
+        }    
     },
     extraReducers: (builder) => {
         builder.addCase(admin_login.pending, (state, { payload }) => {
@@ -173,17 +193,20 @@ export const authReducer = createSlice({
                 state.userInfo = payload.userInfo;
             })
 
-            builder.addCase(add_shop_data.pending, (state, { payload }) => {
-                state.loader = true;
-            }).addCase(add_shop_data.rejected, (state, { payload }) => {
-                state.loader = false;
-                state.errorMessage = payload.error;
-            }).addCase(add_shop_data.fulfilled, (state, { payload }) => {
-                state.loader = false;
-                state.successMessage = payload.message;
-                state.userInfo = payload.userInfo;
+        builder.addCase(add_shop_data.pending, (state, { payload }) => {
+            state.loader = true;
+        }).addCase(add_shop_data.rejected, (state, { payload }) => {
+            state.loader = false;
+            state.errorMessage = payload.error;
+        }).addCase(add_shop_data.fulfilled, (state, { payload }) => {
+            state.loader = false;
+            state.successMessage = payload.message;
+            state.userInfo = payload.userInfo;
+        })
+            .addCase(logout.fulfilled, (state, { payload }) => {            
+                localStorage.removeItem('accessToken');                
             })
     }
 });
-export const { messageClear } = authReducer.actions;
+export const { messageClear} = authReducer.actions;
 export default authReducer.reducer;

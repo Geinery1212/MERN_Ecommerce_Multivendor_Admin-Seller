@@ -1,13 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import logo from '../images/logo.png'
 import { getNav } from '../navigation';
 import { IoLogOut } from "react-icons/io5";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout } from '../store/Reducers/authReducer';
 export const Sidebar = ({ showSidebar, setShowSidebar }) => {
     const [allNav, setAllNav] = useState([]);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { pathname } = useLocation();
     const { role } = useSelector(state => state.auth);
+    const logOut = async () => {
+        dispatch(logout({navigate, role}));                
+    }
     useEffect(() => {
         const navs = getNav(role);
         // console.log(navs)
@@ -39,7 +45,7 @@ export const Sidebar = ({ showSidebar, setShowSidebar }) => {
                                 </Link>
                             </li>
                         ))}
-                        <li className='text-[#030811] font-bold duration-200 px-[12px] py-[9px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
+                        <li onClick={logOut} className='text-[#030811] font-bold duration-200 px-[12px] py-[9px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1 cursor-pointer'>
                             <span><IoLogOut /></span>
                             <span>Logout</span>
                         </li>
