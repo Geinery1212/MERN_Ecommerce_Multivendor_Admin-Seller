@@ -1,13 +1,45 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { FaEye } from "react-icons/fa";
 import Pagination from '../Pagination';
 import Search from '../components/Search';
-
+import { get_seller_orders, messageClear } from '../../store/Reducers/ordersReducer';
+import toast from 'react-hot-toast';
+import MyMoney from '../../utils/MyMoney';
+import { useDispatch, useSelector } from 'react-redux';
 const Orders = () => {
+    const formatter = new MyMoney();
+    const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(1);
-    const [perPage, setPerPage] = useState(5);
     const [searchValue, setSearchValue] = useState('');
+    const [perPage, setPerPage] = useState(5);
+    const [selectedOrder, setSelectedOrder] = useState([]);
+    const { myOrders, totalOrders, errorMessage, successMessage } = useSelector(state => state.ordersReducer);
+    const showSubOrders = (id) => {
+        if (selectedOrder.some(e => e === id)) {
+            let selectedOrderUpdate = selectedOrder.filter((e) => e !== id);
+            setSelectedOrder(selectedOrderUpdate);
+        } else {
+            setSelectedOrder([...selectedOrder, id]);
+
+        }
+    }
+    useEffect(() => {
+        dispatch(get_seller_orders({
+            perPage, 'page': currentPage, searchValue
+        }));
+    }, [currentPage, dispatch, perPage, searchValue]);
+
+    useEffect(() => {
+        if (errorMessage) {
+            toast.error(errorMessage);
+            dispatch(messageClear());
+        }
+        if (successMessage) {
+            toast.success(successMessage);
+            dispatch(messageClear());
+        }
+    }, [successMessage, errorMessage]);
     return (
         <div className='px-2 lg:px-7 pt-5'>
             <h1 className='text-[#000] font-semibold text-lg mb-3'>Discount Products</h1>
@@ -26,16 +58,16 @@ const Orders = () => {
                         </thead>
                         <tbody>
                             {
-                                [1, 2, 3, 4, 5].map((element, index) => {
+                                myOrders?.map((order, index) => {
                                     return <tr key={index}>
-                                        <td className='py-1 px- font-medium whitespace-nowrap text-center'>{element}</td>
-                                        <td className='py-1 px- font-medium whitespace-nowrap text-center'>$123</td>                                       
-                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>Pending</td>
-                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>Pending</td>
-                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'> 
-                                            <div className='flex justify-center items-center gap-4'>                                              
-                                                <Link to={`/seller/dashboard/order/details/${index}`} className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'><FaEye />
-                                                </Link>                                                
+                                        <td className='py-1 px- font-medium whitespace-nowrap text-center'>{order._id}</td>
+                                        <td className='py-1 px- font-medium whitespace-nowrap text-center'>{formatter.centsToFomattedCurrency(order.price)}</td>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{order.payment_status}</td>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{order.delivery_status}</td>
+                                        <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>
+                                            <div className='flex justify-center items-center gap-4'>
+                                                <Link to={`/seller/dashboard/order/details/${order._id}`} className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'><FaEye />
+                                                </Link>
                                             </div>
                                         </td>
                                     </tr>
@@ -45,7 +77,7 @@ const Orders = () => {
                     </table>
                 </div>
                 <div className='w-full flex justify-end mt-4 bottom-4 right-4'>
-                    <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalItems={50} perPage={perPage} showItem={3} />
+                    {totalOrders > perPage && <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalItems={totalOrders} perPage={perPage} showItem={Math.floor(totalOrders / perPage)} />}
                 </div>
             </div>
         </div>

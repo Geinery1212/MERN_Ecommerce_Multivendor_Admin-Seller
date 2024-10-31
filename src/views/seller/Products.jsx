@@ -76,7 +76,7 @@ const Products = () => {
                     </table>
                 </div>
                 <div className='w-full flex justify-end mt-4 bottom-4 right-4'>
-                    {totalProducts > perPage && <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalItems={50} perPage={perPage} showItem={3} />}
+                    {totalProducts > perPage && <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalItems={totalProducts} perPage={perPage} showItem={Math.floor(totalProducts/perPage)} />}
                 </div>
             </div>
         </div>
