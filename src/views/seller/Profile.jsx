@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { add_shop_data, get_user_info, messageClear, profile_image_upload } from '../../store/Reducers/authReducer';
 import toast from 'react-hot-toast';
 import { overrideStyle } from '../../utils/utils';
+import { create_stripe_connect_account } from '../../store/Reducers/sellerReducer';
 const Profile = () => {
 
     const dispatch = useDispatch();
@@ -31,7 +32,7 @@ const Profile = () => {
         }
     }
     //add shop data
-    const add = (e)=>{
+    const add = (e) => {
         e.preventDefault();
         dispatch(add_shop_data(formData));
     }
@@ -118,8 +119,8 @@ const Profile = () => {
                                     <span>Payment Account: </span>
                                     <p>
                                         {
-                                            userInfo.status === 'active' ? <span className='bg-green-500 text-white
-                                            text-xs cursor-pointer font-normal ml-2 px-2 py-0.5 rounded'>{userInfo.payment}</span> : <span className='bg-blue-500 text-white
+                                            userInfo.payment === 'active' ? <span className='bg-green-500 text-white
+                                            text-xs cursor-pointer font-normal ml-2 px-2 py-0.5 rounded'>{userInfo.payment}</span> : <span onClick={() => dispatch(create_stripe_connect_account())} className='bg-blue-500 text-white
                                             text-xs cursor-pointer font-normal ml-2 px-2 py-0.5 rounded'>Click Active</span>
                                         }
                                     </p>
@@ -128,7 +129,7 @@ const Profile = () => {
                         </div>
                         <div className='px-0 md:px-5 py-2'>
                             {
-                                (!userInfo.shopInfo || !userInfo.shopInfo.length > 3 ) ?
+                                (!userInfo.shopInfo || !userInfo.shopInfo.length > 3) ?
                                     /* edit info */
                                     <form onSubmit={add}>
                                         <div className='flex flex-col w-full gap-1 mb-2'>

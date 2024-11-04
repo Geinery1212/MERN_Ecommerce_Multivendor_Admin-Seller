@@ -4,9 +4,9 @@ import api from "../../connection/api";
 
 export const get_pending_sellers = createAsyncThunk(
     'seller/get_pending_sellers',
-    async ({ perPage, page, searchValue }, { rejectWithValue, fulfillWithValue }) => {        
+    async ({ perPage, page, searchValue }, { rejectWithValue, fulfillWithValue }) => {
         try {
-            const { data } = await api.get(`/sellers-get-pending?page=${page}&perPage=${perPage}&searchValue=${searchValue}`, { withCredentials: true });            
+            const { data } = await api.get(`/sellers-get-pending?page=${page}&perPage=${perPage}&searchValue=${searchValue}`, { withCredentials: true });
             return fulfillWithValue(data);
         } catch (error) {
             console.error(error);
@@ -17,9 +17,9 @@ export const get_pending_sellers = createAsyncThunk(
 
 export const get_active_sellers = createAsyncThunk(
     'seller/get_active_sellers',
-    async ({ perPage, page, searchValue }, { rejectWithValue, fulfillWithValue }) => {        
+    async ({ perPage, page, searchValue }, { rejectWithValue, fulfillWithValue }) => {
         try {
-            const { data } = await api.get(`/sellers-get-active?page=${page}&perPage=${perPage}&searchValue=${searchValue}`, { withCredentials: true });            
+            const { data } = await api.get(`/sellers-get-active?page=${page}&perPage=${perPage}&searchValue=${searchValue}`, { withCredentials: true });
             return fulfillWithValue(data);
         } catch (error) {
             console.error(error);
@@ -32,7 +32,7 @@ export const get_deactive_sellers = createAsyncThunk(
     'seller/get_deactive_sellers',
     async ({ perPage, page, searchValue }, { rejectWithValue, fulfillWithValue }) => {
         try {
-            const { data } = await api.get(`/sellers-get-deactive?page=${page}&perPage=${perPage}&searchValue=${searchValue}`, { withCredentials: true });                        
+            const { data } = await api.get(`/sellers-get-deactive?page=${page}&perPage=${perPage}&searchValue=${searchValue}`, { withCredentials: true });
             return fulfillWithValue(data);
         } catch (error) {
             console.error(error);
@@ -74,6 +74,34 @@ export const update_status_seller = createAsyncThunk(
     }
 );
 
+
+export const create_stripe_connect_account = createAsyncThunk(
+    'seller/create_stripe_connect_account',
+    async (_, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            const { data :{url} } = await api.get(`/payment/create-stripe-connect-account`, { withCredentials: true });
+            console.log(url)
+            window.location.href = url;
+            // return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const active_stripe_connect_account = createAsyncThunk(
+    'seller/active_stripe_connect_account',
+    async(activeCode, {rejectWithValue, fulfillWithValue}) => { 
+        try { 
+            const {data } = await api.put(`/payment/active-stripe-connect-account/${activeCode}`,{},{withCredentials: true}) 
+            return fulfillWithValue(data)
+        } catch (error) {
+            console.log(error); 
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
 export const sellerReducer = createSlice({
     name: 'seller',
     initialState: {
@@ -118,6 +146,17 @@ export const sellerReducer = createSlice({
                 state.loader = false;
                 state.errorMessage = payload.error;
             }).addCase(update_status_seller.fulfilled, (state, { payload }) => {
+                state.loader = false;
+                state.successMessage = payload.message;
+                state.seller = payload.seller;
+            })
+
+            .addCase(active_stripe_connect_account.pending, (state, { payload }) => {
+                state.loader = true;
+            }).addCase(active_stripe_connect_account.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload.error;
+            }).addCase(active_stripe_connect_account.fulfilled, (state, { payload }) => {
                 state.loader = false;
                 state.successMessage = payload.message;
                 state.seller = payload.seller;
