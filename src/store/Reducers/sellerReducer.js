@@ -108,6 +108,7 @@ export const sellerReducer = createSlice({
         successMessage: '',
         errorMessage: '',
         loader: false,
+        loader2: false,
         sellers: [],
         seller: {},
         totalSellers: 0
@@ -160,6 +161,15 @@ export const sellerReducer = createSlice({
                 state.loader = false;
                 state.successMessage = payload.message;
                 state.seller = payload.seller;
+            })
+
+            .addCase(create_stripe_connect_account.pending, (state, { payload }) => {
+                state.loader2 = true;
+            }).addCase(create_stripe_connect_account.rejected, (state, { payload }) => {
+                state.loader2 = false;
+                state.errorMessage = payload.error;
+            }).addCase(create_stripe_connect_account.fulfilled, (state, { payload }) => {                
+                    state.loader2 = false;                                                         
             })
     }
 });

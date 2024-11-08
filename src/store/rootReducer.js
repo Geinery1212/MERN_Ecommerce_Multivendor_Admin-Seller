@@ -4,6 +4,7 @@ import chatAdminToSellerReducer from "./Reducers/chat/chatAdminToSellerReducer";
 import chatSellerReducer from "./Reducers/chat/chatSellerReducer";
 import chatSellerToAdminReducer from "./Reducers/chat/chatSellerToAdminReducer";
 import ordersReducer from "./Reducers/ordersReducer";
+import paymentReducer from "./Reducers/paymentReducer";
 import productReducer from "./Reducers/productReducer";
 import sellerReducer from "./Reducers/sellerReducer";
 
@@ -15,6 +16,7 @@ const rootReducer = {
     chatSellerReducer: chatSellerReducer,
     chatAdminToSellerReducer: chatAdminToSellerReducer,
     chatSellerToAdminReducer: chatSellerToAdminReducer,
-    ordersReducer: ordersReducer
+    ordersReducer: ordersReducer,
+    payment: paymentReducer
 }
 export default rootReducer;
