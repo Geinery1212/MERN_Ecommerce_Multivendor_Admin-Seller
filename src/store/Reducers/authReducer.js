@@ -96,13 +96,13 @@ export const add_shop_data = createAsyncThunk(
 export const logout = createAsyncThunk(
     'auth/logout',
     async ({ navigate, role }, { rejectWithValue, fulfillWithValue }) => {
-        try {            
-            const { data } = await api.get('/dashboard/logout', { withCredentials: true });                
-            if (role === 'admin') {                
+        try {
+            const { data } = await api.get('/dashboard/logout', { withCredentials: true });
+            if (role === 'admin') {
                 navigate('/admin/login');
             } else {
                 navigate('/login');
-            }            
+            }
             return fulfillWithValue(data);
         } catch (error) {
             console.error(error);
@@ -129,6 +129,7 @@ export const authReducer = createSlice({
         successMessage: '',
         errorMessage: '',
         loader: false,
+        loaderLogOut: false,
         userInfo: '',
         role: returnRole(localStorage.getItem('accessToken')),
         token: localStorage.getItem('accessToken')
@@ -137,7 +138,7 @@ export const authReducer = createSlice({
         messageClear: (state, _) => {
             state.errorMessage = '';
             state.successMessage = '';
-        }    
+        }
     },
     extraReducers: (builder) => {
         builder.addCase(admin_login.pending, (state, { payload }) => {
@@ -202,10 +203,18 @@ export const authReducer = createSlice({
             state.successMessage = payload.message;
             state.userInfo = payload.userInfo;
         })
-            .addCase(logout.fulfilled, (state, { payload }) => {            
-                localStorage.removeItem('accessToken');                
+
+            .addCase(logout.pending, (state) => {
+                state.loaderLogOut = true;
+            })
+            .addCase(logout.rejected, (state) => {
+                state.loaderLogOut = false;
+            })
+            .addCase(logout.fulfilled, (state, { payload }) => {
+                state.loaderLogOut = false;
+                localStorage.removeItem('accessToken');
             })
     }
 });
-export const { messageClear} = authReducer.actions;
+export const { messageClear } = authReducer.actions;
 export default authReducer.reducer;

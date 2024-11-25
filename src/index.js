@@ -14,7 +14,9 @@ root.render(
     The reason Suspense wraps around App is because App is loaded asynchronously. This means it may take some time to load. Suspense allows us to display a spinner or other fallback content while waiting for App to load.
      */}
     <Provider store={store}>
-      <Suspense fallback={<h1>Loading...</h1>}>
+      <Suspense fallback={<div className='w-screen h-screen flex justify-center
+            items-center fixed left-0 top-0 bg-[#38303033] z-[999]'>                
+            </div>}>
         <App />
         <Toaster
           toastOptions={{

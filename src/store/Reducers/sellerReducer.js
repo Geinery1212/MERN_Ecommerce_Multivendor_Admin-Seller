@@ -79,7 +79,7 @@ export const create_stripe_connect_account = createAsyncThunk(
     'seller/create_stripe_connect_account',
     async (_, { rejectWithValue, fulfillWithValue }) => {
         try {
-            const { data :{url} } = await api.get(`/payment/create-stripe-connect-account`, { withCredentials: true });
+            const { data: { url } } = await api.get(`/payment/create-stripe-connect-account`, { withCredentials: true });
             console.log(url)
             window.location.href = url;
             // return fulfillWithValue(data);
@@ -92,12 +92,12 @@ export const create_stripe_connect_account = createAsyncThunk(
 
 export const active_stripe_connect_account = createAsyncThunk(
     'seller/active_stripe_connect_account',
-    async(activeCode, {rejectWithValue, fulfillWithValue}) => { 
-        try { 
-            const {data } = await api.put(`/payment/active-stripe-connect-account/${activeCode}`,{},{withCredentials: true}) 
+    async (activeCode, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            const { data } = await api.put(`/payment/active-stripe-connect-account/${activeCode}`, {}, { withCredentials: true })
             return fulfillWithValue(data)
         } catch (error) {
-            console.log(error); 
+            console.log(error);
             return rejectWithValue(error.response.data);
         }
     }
@@ -109,6 +109,7 @@ export const sellerReducer = createSlice({
         errorMessage: '',
         loader: false,
         loader2: false,
+        loader3: false,
         sellers: [],
         seller: {},
         totalSellers: 0
@@ -121,23 +122,44 @@ export const sellerReducer = createSlice({
     },
     extraReducers: (builder) => {
         builder
-
-            .addCase(get_pending_sellers.fulfilled, (state, { payload }) => {
+            .addCase(get_pending_sellers.pending, (state) => {
+                state.loader2 = true;
+            }).addCase(get_pending_sellers.rejected, (state) => {
+                state.loader2 = false;
+            }).addCase(get_pending_sellers.fulfilled, (state, { payload }) => {
+                state.loader2 = false;
                 state.totalSellers = payload.totalSellers;
                 state.sellers = payload.sellers;
             })
 
-            .addCase(get_active_sellers.fulfilled, (state, { payload }) => {
+            .addCase(get_active_sellers.pending, (state) => {
+                state.loader2 = true;
+            }).addCase(get_active_sellers.rejected, (state) => {
+                state.loader2 = false;
+            }).addCase(get_active_sellers.fulfilled, (state, { payload }) => {
+                state.loader2 = false;
                 state.totalSellers = payload.totalSellers;
                 state.sellers = payload.sellers;
             })
 
-            .addCase(get_deactive_sellers.fulfilled, (state, { payload }) => {
+            .addCase(get_deactive_sellers.pending, (state) => {
+                state.loader2 = true;
+            }).addCase(get_deactive_sellers.rejected, (state) => {
+                state.loader2 = false;
+            }).addCase(get_deactive_sellers.fulfilled, (state, { payload }) => {
+                state.loader2 = false;
                 state.totalSellers = payload.totalSellers;
                 state.sellers = payload.sellers;
             })
 
+            .addCase(get_seller.pending, (state) => {
+                state.loader3 = true;
+            })
+            .addCase(get_seller.rejected, (state) => {
+                state.loader3 = false;
+            })
             .addCase(get_seller.fulfilled, (state, { payload }) => {
+                state.loader3 = false;
                 state.seller = payload.seller;
             })
 
@@ -168,8 +190,8 @@ export const sellerReducer = createSlice({
             }).addCase(create_stripe_connect_account.rejected, (state, { payload }) => {
                 state.loader2 = false;
                 state.errorMessage = payload.error;
-            }).addCase(create_stripe_connect_account.fulfilled, (state, { payload }) => {                
-                    state.loader2 = false;                                                         
+            }).addCase(create_stripe_connect_account.fulfilled, (state, { payload }) => {
+                state.loader2 = false;
             })
     }
 });

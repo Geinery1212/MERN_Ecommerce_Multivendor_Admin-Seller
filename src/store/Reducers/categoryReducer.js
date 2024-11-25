@@ -19,6 +19,26 @@ export const add_category = createAsyncThunk(
     }
 );
 
+export const update_category = createAsyncThunk(
+    'category/update',
+    async ({ name, image, id }, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            //FormData needed to send images ;v
+            const formData = new FormData();
+            formData.append('name', name);
+            if (image) {
+                formData.append('image', image);
+            }
+            const { data } = await api.put(`/category-update/${id}`, formData, { withCredentials: true });
+            // console.log(data);
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
 export const get_category = createAsyncThunk(
     'category/get_category',
     async ({ perPage, page, searchValue }, { rejectWithValue, fulfillWithValue }) => {
@@ -34,12 +54,26 @@ export const get_category = createAsyncThunk(
     }
 );
 
+export const delete_category = createAsyncThunk(
+    'category/delete_category',
+    async (id, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            const { data } = await api.delete(`/category-delete/${id}`, { withCredentials: true });
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
 export const categoryReducer = createSlice({
     name: 'category',
     initialState: {
         successMessage: '',
         errorMessage: '',
         loader: false,
+        loader2: false,
         categories: [],
         totalCategories: 0
     },
@@ -57,13 +91,46 @@ export const categoryReducer = createSlice({
             state.errorMessage = payload.error;
         }).addCase(add_category.fulfilled, (state, { payload }) => {
             state.loader = false;
+            state.totalCategories = state.totalCategories + 1;
             state.successMessage = payload.message;
-            state.categories = [...state.categories, payload.category]
         })
-
+            .addCase(get_category.pending, (state, { payload }) => {
+                state.loader2 = true;
+            })
+            .addCase(get_category.rejected, (state, { payload }) => {
+                state.loader2 = false;
+            })
             .addCase(get_category.fulfilled, (state, { payload }) => {
+                state.loader2 = false;
                 state.totalCategories = payload.totalCategories;
                 state.categories = payload.categories;
+            })
+
+            .addCase(update_category.pending, (state, { payload }) => {
+                state.loader = true;
+            }).addCase(update_category.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload.error;
+            }).addCase(update_category.fulfilled, (state, { payload }) => {
+                const index = state.categories.findIndex((cat) => cat._id === payload.category._id);
+                if (index !== -1) {
+                    state.categories[index] = payload.category;
+                }
+                state.loader = false;
+                state.successMessage = payload.message;
+
+            })
+
+            .addCase(delete_category.pending, (state, { payload }) => {
+                state.loader = true;
+            }).addCase(delete_category.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload.error;
+            }).addCase(delete_category.fulfilled, (state, { payload }) => {
+                state.totalCategories = state.totalCategories - 1;
+                state.loader = false;
+                state.successMessage = payload.message;
+
             })
     }
 });
