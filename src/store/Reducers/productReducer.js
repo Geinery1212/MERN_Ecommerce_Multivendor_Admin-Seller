@@ -36,6 +36,23 @@ export const get_products = createAsyncThunk(
     }
 );
 
+export const get_products_discount = createAsyncThunk(
+    'product/get_products_discount',
+    async ({ perPage, page, searchValue }, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            // console.log(page);
+            const { data } = await api.get(`/products-dicount-get?page=${page}&perPage=${perPage}&searchValue=${searchValue}`,
+                { withCredentials: true });
+
+            // console.log(data);
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
 export const get_product = createAsyncThunk(
     'product/get_product',
     async ({ productId }, { rejectWithValue, fulfillWithValue }) => {
@@ -89,6 +106,36 @@ export const product_image_update = createAsyncThunk(
         }
     }
 );
+
+export const delete_product = createAsyncThunk(
+    'product/delete_product',
+    async (id, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            const { data } = await api.delete(`/product-delete/${id}`,
+                { withCredentials: true });
+            // console.log(data);
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+export const delete_product_discount = createAsyncThunk(
+    'product/delete_product_discount',
+    async (id, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            const { data } = await api.delete(`/product-delete/${id}`,
+                { withCredentials: true });
+            // console.log(data);
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
 export const productReducer = createSlice({
     name: 'product',
     initialState: {
@@ -97,8 +144,10 @@ export const productReducer = createSlice({
         loader: false,
         loader2: false,
         products: [],
+        productsDiscount: [],
         product: {},
-        totalProducts: 0
+        totalProducts: 0,
+        totalProductsDiscount: 0
     },
     reducers: {
         messageClear: (state, _) => {
@@ -107,7 +156,7 @@ export const productReducer = createSlice({
         }
     },
     extraReducers: (builder) => {
-        builder.addCase(add_product.pending, (state, { payload }) => {
+        builder.addCase(add_product.pending, (state) => {
             state.loader = true;
         }).addCase(add_product.rejected, (state, { payload }) => {
             state.loader = false;
@@ -129,6 +178,18 @@ export const productReducer = createSlice({
                 state.products = payload.products;
             })
 
+            .addCase(get_products_discount.pending, (state) => {
+                state.loader = true;
+            })
+            .addCase(get_products_discount.rejected, (state) => {
+                state.loader = false;
+            })
+            .addCase(get_products_discount.fulfilled, (state, { payload }) => {
+                state.loader = false;
+                state.totalProductsDiscount = payload.totalProducts;
+                state.productsDiscount = payload.products;
+            })
+
 
             .addCase(get_product.pending, (state) => {
                 state.loader2 = true;
@@ -141,27 +202,49 @@ export const productReducer = createSlice({
                 state.product = payload.product;
             })
 
-        builder.addCase(update_product.pending, (state, { payload }) => {
-            state.loader = true;
-        }).addCase(update_product.rejected, (state, { payload }) => {
-            state.loader = false;
-            state.errorMessage = payload.error;
-        }).addCase(update_product.fulfilled, (state, { payload }) => {
-            state.loader = false;
-            state.successMessage = payload.message;
-            state.product = payload.product;
-        })
+            .addCase(update_product.pending, (state) => {
+                state.loader = true;
+            }).addCase(update_product.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload.error;
+            }).addCase(update_product.fulfilled, (state, { payload }) => {
+                state.loader = false;
+                state.successMessage = payload.message;
+                state.product = payload.product;
+            })
 
-        builder.addCase(product_image_update.pending, (state, { payload }) => {
-            state.loader = true;
-        }).addCase(product_image_update.rejected, (state, { payload }) => {
-            state.loader = false;
-            state.errorMessage = payload.error;
-        }).addCase(product_image_update.fulfilled, (state, { payload }) => {
-            state.loader = false;
-            state.successMessage = payload.message;
-            state.product = payload.product;
-        })
+            .addCase(product_image_update.pending, (state) => {
+                state.loader = true;
+            }).addCase(product_image_update.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload.error;
+            }).addCase(product_image_update.fulfilled, (state, { payload }) => {
+                state.loader = false;
+                state.successMessage = payload.message;
+                state.product = payload.product;
+            })
+
+            .addCase(delete_product.pending, (state) => {
+                state.loader = true;
+            }).addCase(delete_product.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload.error;
+            }).addCase(delete_product.fulfilled, (state, { payload }) => {
+                state.loader = false;
+                state.successMessage = payload.message;
+                state.totalProducts = state.totalProducts - 1;
+            })
+
+            .addCase(delete_product_discount.pending, (state) => {
+                state.loader = true;
+            }).addCase(delete_product_discount.rejected, (state, { payload }) => {
+                state.loader = false;
+                state.errorMessage = payload.error;
+            }).addCase(delete_product_discount.fulfilled, (state, { payload }) => {
+                state.loader = false;
+                state.successMessage = payload.message;
+                state.totalProductsDiscount = state.totalProductsDiscount - 1;
+            })
     }
 });
 export const { messageClear } = productReducer.actions;

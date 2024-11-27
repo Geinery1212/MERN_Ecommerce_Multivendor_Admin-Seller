@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react'
 import { FaImages, FaRegEdit } from "react-icons/fa";
 import { FadeLoader, PropagateLoader } from 'react-spinners';
 import { useDispatch, useSelector } from 'react-redux';
-import { add_shop_data, get_user_info, messageClear, profile_image_upload } from '../../store/Reducers/authReducer';
+import { add_shop_data, change_password, get_user_info, messageClear, profile_image_upload } from '../../store/Reducers/authReducer';
 import toast from 'react-hot-toast';
 import { overrideStyle } from '../../utils/utils';
 import { create_stripe_connect_account } from '../../store/Reducers/sellerReducer';
 const Profile = () => {
 
     const dispatch = useDispatch();
-    const { userInfo, loader, errorMessage, successMessage } = useSelector(state => state.auth);
+    const { userInfo, loader,loaderChangePasword, errorMessage, successMessage } = useSelector(state => state.auth);
     const {loader2} = useSelector(state => state.seller);
 
     const [formData, setFormData] = useState({
@@ -18,12 +18,31 @@ const Profile = () => {
         district: '',
         subdistrict: ''
     });
+
+    const [formData2, setFormData2] = useState({
+        email: '',
+        old_password: '',
+        new_password: ''        
+    });
     const inputHandler = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         });
     }
+
+    const inputHandler2 = (e) => {
+        setFormData2({
+            ...formData2,
+            [e.target.name]: e.target.value
+        });
+    }
+
+    const changePassword = (e)=>{
+        e.preventDefault();        
+        dispatch(change_password(formData2))
+    }
+
     const add_image = (e) => {
         if (e.target.files.length > 0) {
             // console.log(e.target.files[0]);
@@ -54,7 +73,7 @@ const Profile = () => {
 
     return (
         <>
-            {loader2 && <div className='w-screen h-screen flex justify-center
+            {(loader2 || loaderChangePasword) && <div className='w-screen h-screen flex justify-center
                 items-center fixed left-0 top-0 bg-[#38303033] z-[999]'>
                 <FadeLoader />
             </div>}
@@ -201,24 +220,24 @@ const Profile = () => {
                             <div className='bg-[#6a5fdf]
                     rounded-md text-[#d0d2d6] p-4'>
                                 <h2 className='text-lg mb-3 font-semibold'>Change Password</h2>
-                                <form>
+                                <form onSubmit={changePassword}>
                                     <div className='flex flex-col w-full gap-1 mb-2'>
                                         <label htmlFor="email">Email:</label>
                                         <input type="text" name="email" id="email" placeholder='Email'
-                                            onChange={inputHandler} value={formData.email} className='px-4 py-2 focus:border-indigo-500 outline-none
-                                bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]'/>
+                                            onChange={inputHandler2} value={formData2.email} className='px-4 py-2 focus:border-indigo-500 outline-none
+                                bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]' required/>
                                     </div>
                                     <div className='flex flex-col w-full gap-1 mb-2'>
                                         <label htmlFor="o_password">Old Password:</label>
-                                        <input type="password" name="o_password" id="o_password" placeholder='Old Password'
-                                            onChange={inputHandler} value={formData.o_password} className='px-4 py-2 focus:border-indigo-500 outline-none
-                                bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]'/>
+                                        <input type="password" name="old_password" id="old_password" placeholder='Old Password'
+                                            onChange={inputHandler2} value={formData2.old_password} className='px-4 py-2 focus:border-indigo-500 outline-none
+                                bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]' required/>
                                     </div>
                                     <div className='flex flex-col w-full gap-1 mb-2'>
                                         <label htmlFor="n_password">New Password:</label>
-                                        <input type="password" name="n_password" id="n_password" placeholder='New Password'
-                                            onChange={inputHandler} value={formData.n_password} className='px-4 py-2 focus:border-indigo-500 outline-none
-                                bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]'/>
+                                        <input type="password" name="new_password" id="new_password" placeholder='New Password'
+                                            onChange={inputHandler2} value={formData2.new_password} className='px-4 py-2 focus:border-indigo-500 outline-none
+                                bg-[#6a5fdf] border border-slate-700 rounded-md text-[#d0d2d6]' required/>
                                     </div>
                                     <button className='bg-red-500 hover:shadow-red-500/40 hover:shadow-md text-white rounded-md px-7 py-2'>Save Changes</button>
                                 </form>

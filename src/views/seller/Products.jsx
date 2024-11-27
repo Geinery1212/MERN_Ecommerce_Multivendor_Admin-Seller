@@ -4,16 +4,37 @@ import { FaEdit, FaEye, FaTrash } from "react-icons/fa";
 import Pagination from '../Pagination';
 import Search from '../components/Search';
 import { useDispatch, useSelector } from 'react-redux';
-import { get_products } from '../../store/Reducers/productReducer';
+import { delete_product, get_products, messageClear } from '../../store/Reducers/productReducer';
 import { FadeLoader } from 'react-spinners';
+import MyMoney from '../../utils/MyMoney';
+import Swal from 'sweetalert2';
+import toast from 'react-hot-toast';
 
 const Products = () => {
+    const formatter = new MyMoney();
     const [currentPage, setCurrentPage] = useState(1);
     const [perPage, setPerPage] = useState(5);
     const [searchValue, setSearchValue] = useState('');
     const dispatch = useDispatch();
-    // const [allProducts, setAllProducts] = useState([]);
-    let { loader, totalProducts, products } = useSelector(state => state.product);
+    let { loader, totalProducts, products, errorMessage, successMessage } = useSelector(state => state.product);    
+    const deleteProduct = (id) => {
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                dispatch(delete_product(id));
+
+            }
+        });
+    }
+
     useEffect(() => {
         const obj = {
             perPage: parseInt(perPage),
@@ -21,7 +42,19 @@ const Products = () => {
             searchValue
         }
         dispatch(get_products(obj));
-    }, [perPage, currentPage, searchValue, dispatch]);
+    }, [perPage, currentPage, searchValue, dispatch, totalProducts]);
+
+    useEffect(() => {        
+        if (errorMessage) {
+            toast.error(errorMessage);
+            dispatch(messageClear());
+        }
+        if (successMessage) {
+            toast.success(successMessage);
+            dispatch(messageClear());            
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [successMessage, errorMessage]);
 
     return (
         <>
@@ -61,16 +94,16 @@ const Products = () => {
                                             <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{element.name.length > 15 ? element?.name?.slice(0, 15) + '...' : element.name}</td>
                                             <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{element.category}</td>
                                             <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{element.brand}</td>
-                                            <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>${element.price}</td>
+                                            <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{formatter.centsToFomattedCurrency(element.price)}</td>
                                             <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{element.discount === 0 ? 'No Discount' : element.discount + '%'}</td>
                                             <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>{element.discount}</td>
                                             <td className='py-1 px-4 font-medium whitespace-nowrap text-center'>
                                                 <div className='flex justify-center items-center gap-4'>
                                                     <Link to={`/seller/dashboard/edit-product/${element._id}`} className='p-[6px] bg-yellow-500 rounded hover:shadow-lg hover:shadow-yellow-500/50'><FaEdit />
                                                     </Link>
-                                                    <Link className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'><FaEye />
+                                                    <Link to={`/seller/dashboard/view-product/${element._id}`} className='p-[6px] bg-green-500 rounded hover:shadow-lg hover:shadow-green-500/50'><FaEye />
                                                     </Link>
-                                                    <Link className='p-[6px] bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50'><FaTrash />
+                                                    <Link onClick={()=>deleteProduct(element._id)} className='p-[6px] bg-red-500 rounded hover:shadow-lg hover:shadow-red-500/50'><FaTrash />
                                                     </Link>
                                                 </div>
                                             </td>

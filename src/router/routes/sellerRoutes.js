@@ -3,7 +3,8 @@ import { lazy } from "react";
 /**
  * Make sure components are exported as default components
  * Sixtax: export default ComponentName
- */
+*/
+const ViewProduct = lazy(() => import("../../views/seller/ViewProduct"));
 const SellerDashboard = lazy(() => import("../../views/seller/SellerDashboard"));
 const AddProduct = lazy(() => import("../../views/seller/AddProduct"));
 const Products = lazy(() => import("../../views/seller/Products"));
@@ -17,7 +18,7 @@ const EditProduct = lazy(() => import("../../views/seller/EditProduct"));
 const OrderDetails = lazy(() => import("../../views/seller/OrderDetails"));
 const DeactiveAccount = lazy(() => import("../../views/auth/pages/DeactiveAccount"));
 const PendingAccount = lazy(() => import("../../views/auth/pages/PendingAccount"));
-export const sellerRoutes = [ 
+export const sellerRoutes = [
     {
         path: '/seller/dashboard',
         element: <SellerDashboard />,
@@ -29,10 +30,16 @@ export const sellerRoutes = [
         element: <AddProduct />,
         role: 'seller',
         status: 'active'
-    },    
+    },
     {
         path: '/seller/dashboard/edit-product/:productId',
         element: <EditProduct />,
+        role: 'seller',
+        status: 'active'
+    },
+    {
+        path: '/seller/dashboard/view-product/:productId',
+        element: <ViewProduct />,
         role: 'seller',
         status: 'active'
     },

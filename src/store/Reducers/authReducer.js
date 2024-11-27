@@ -110,6 +110,20 @@ export const logout = createAsyncThunk(
         }
     }
 );
+
+export const change_password = createAsyncThunk(
+    'auth/change_password',
+    async (obj, { rejectWithValue, fulfillWithValue }) => {
+        try {
+            const { data } = await api.put('/dashboard/change-password', obj, { withCredentials: true });
+            // console.log(data);
+            return fulfillWithValue(data);
+        } catch (error) {
+            console.error(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
 const returnRole = (token) => {
     if (token) {
         const decodeToken = jwtDecode(token);
@@ -130,6 +144,7 @@ export const authReducer = createSlice({
         errorMessage: '',
         loader: false,
         loaderLogOut: false,
+        loaderChangePasword: false,
         userInfo: '',
         role: returnRole(localStorage.getItem('accessToken')),
         token: localStorage.getItem('accessToken')
@@ -213,6 +228,18 @@ export const authReducer = createSlice({
             .addCase(logout.fulfilled, (state, { payload }) => {
                 state.loaderLogOut = false;
                 localStorage.removeItem('accessToken');
+            })
+
+            .addCase(change_password.pending, (state) => {
+                state.loaderChangePasword = true;
+            })
+            .addCase(change_password.rejected, (state, {payload}) => {
+                state.loaderChangePasword = false;
+                state.errorMessage = payload.error;
+            })
+            .addCase(change_password.fulfilled, (state, { payload }) => {
+                state.loaderChangePasword = false;
+                state.successMessage = payload.message;                
             })
     }
 });
